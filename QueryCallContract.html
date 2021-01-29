@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QueryCallContract</title>
+</head>
+<body>
+<script type="text/javascript" src="config/config.js"></script>
+<script type="text/javascript" src="./aepp-sdk.browser-script.js"></script>
+<script type="text/javascript" src="./contract/PriceFeedContract.js"></script>
+<script type="text/javascript" src="./contract/PriceFeedQueryContract.js"></script>
+<script type="text/javascript">
+
+
+    async function callContract(priceFeedQueryAddress, priceFeedContractAddress) {
+        const node = await Ae.Node({url: nodeUrl, internalUrl: nodeUrlTestNet});
+        const client = await Ae.Universal({
+            compilerUrl: compilerUrl,
+            nodes: [{name: 'local', instance: node}],
+            accounts: [Ae.MemoryAccount({keypair: {secretKey: secretKey, publicKey: publicKey}})],
+            address: publicKey
+        });
+
+        const contractInstance = await client.getContractInstance(PriceFeedQuery, {contractAddress: priceFeedQueryAddress});
+        const queryAePrice = await contractInstance.methods.queryAePrice(priceFeedContractAddress.replace('ct_', 'ok_'), "ae/usdt", {
+            amount: 100000000000000000
+        });
+        console.log('call query oq_id -> ' + JSON.stringify(queryAePrice.decodedResult));
+        const oId = queryAePrice.decodedResult;
+        const task = window.setInterval(function () {
+            contractInstance.methods.checkQuery(priceFeedContractAddress.replace('ct_', 'ok_'), oId).then(checkQuery => {
+
+                if (checkQuery.decodedResult !== undefined) {
+                    console.log('checkQuery -> ' + JSON.stringify(Ae.AmountFormatter.toAe(checkQuery.decodedResult)));
+                    window.clearInterval(task)
+                }
+            }).catch(err => {
+                console.log("error");
+                console.log(JSON.stringify(err));
+            })
+        }, 5000);
+
+
+    }
+
+
+    async function start() {
+        await callContract("ct_cTJ3vUSh1jTLJoRNsD1YSmUS6j6etn5EmR9dTLuUBntta9cBH", "ct_mfPcbwJ3kySdk1zsm47S87Fh8MvnpjRRWVWwmXva7M9xTc8oP");
+    }
+
+    start();
+
+
+</script>
+</body>
+</html>

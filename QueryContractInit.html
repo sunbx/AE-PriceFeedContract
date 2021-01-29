@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QueryContractInit</title>
+</head>
+<body>
+<script type="text/javascript" src="config/config.js"></script>
+<script type="text/javascript" src="./aepp-sdk.browser-script.js"></script>
+<script type="text/javascript" src="./contract/PriceFeedContract.js"></script>
+<script type="text/javascript" src="./contract/PriceFeedQueryContract.js"></script>
+<script type="text/javascript">
+
+
+    async function contractInit() {
+        const node = await Ae.Node({url: nodeUrl, internalUrl: nodeUrlTestNet});
+        const client = await Ae.Universal({
+            compilerUrl: compilerUrl,
+            nodes: [{name: 'local', instance: node}],
+            accounts: [Ae.MemoryAccount({keypair: {secretKey: secretKey, publicKey: publicKey}})],
+            address: publicKey
+        });
+
+        const contractInstance = await client.getContractInstance(PriceFeedQuery);
+        const deploy = await contractInstance.deploy();
+        console.log('create query ct_address -> ' + JSON.stringify(deploy.address));
+
+
+    }
+
+
+    async function start() {
+        await contractInit();
+
+    }
+
+    start();
+
+
+</script>
+</body>
+</html>

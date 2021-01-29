@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PriceContractInit</title>
+</head>
+<body>
+<script type="text/javascript" src="config/config.js"></script>
+<script type="text/javascript" src="./aepp-sdk.browser-script.js"></script>
+<script type="text/javascript" src="./contract/PriceFeedContract.js"></script>
+<script type="text/javascript" src="./contract/PriceFeedQueryContract.js"></script>
+<script type="text/javascript">
+
+
+    async function contractInit() {
+        const node = await Ae.Node({url: nodeUrl, internalUrl: nodeUrlTestNet});
+        const client = await Ae.Universal({
+            compilerUrl: compilerUrl,
+            nodes: [{name: 'local', instance: node}],
+            accounts: [Ae.MemoryAccount({keypair: {secretKey: secretKey, publicKey: publicKey}})],
+            address: publicKey
+        });
+
+        const contractInstance = await client.getContractInstance(PriceFeedContract);
+        const deploy = await contractInstance.deploy(["100000000000000000"]);
+        console.log('create ct_address -> ' + JSON.stringify(deploy.address));
+
+        const addOfferAccount = await contractInstance.methods.addOfferAccount("ak_rvJUwv6QnG6QtzmGgzujftB76837Yg4PVpUsuAZNhHDyhNYGC", "Baixin");
+        console.log('call addOfferAccount -> ' + JSON.stringify(addOfferAccount.decodedResult));
+    }
+
+
+
+    async function start() {
+        await contractInit();
+    }
+
+    start();
+
+
+</script>
+</body>
+</html>

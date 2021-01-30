@@ -20,11 +20,12 @@
             accounts: [Ae.MemoryAccount({keypair: {secretKey: secretKey, publicKey: publicKey}})],
             address: publicKey
         });
-
+        //Deploy the contract and set the call price of the oracle
         const contractInstance = await client.getContractInstance(PriceFeedContract);
         const deploy = await contractInstance.deploy(["100000000000000000"]);
         console.log('create ct_address -> ' + JSON.stringify(deploy.address));
 
+        //Add an accessible account that will be quoted later
         const addOfferAccount = await contractInstance.methods.addOfferAccount("ak_rvJUwv6QnG6QtzmGgzujftB76837Yg4PVpUsuAZNhHDyhNYGC", "Baixin");
         console.log('call addOfferAccount -> ' + JSON.stringify(addOfferAccount.decodedResult));
     }

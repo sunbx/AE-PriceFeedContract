@@ -21,6 +21,7 @@
             address: publicKey
         });
 
+        //Query the price of AE through the contract call
         const contractInstance = await client.getContractInstance(PriceFeedQuery, {contractAddress: priceFeedQueryAddress});
         const queryAePrice = await contractInstance.methods.queryAePrice(priceFeedContractAddress.replace('ct_', 'ok_'), "ae/usdt", {
             amount: 100000000000000000
@@ -28,8 +29,8 @@
         console.log('call query oq_id -> ' + JSON.stringify(queryAePrice.decodedResult));
         const oId = queryAePrice.decodedResult;
         const task = window.setInterval(function () {
+            //Loop through the oq_id to see if there is a response available
             contractInstance.methods.checkQuery(priceFeedContractAddress.replace('ct_', 'ok_'), oId).then(checkQuery => {
-
                 if (checkQuery.decodedResult !== undefined) {
                     console.log('checkQuery -> ' + JSON.stringify(Ae.AmountFormatter.toAe(checkQuery.decodedResult)));
                     window.clearInterval(task)

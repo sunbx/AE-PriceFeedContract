@@ -20,7 +20,7 @@
             accounts: [Ae.MemoryAccount({keypair: {secretKey: secretKey, publicKey: publicKey}})],
             address: publicKey
         });
-
+        //Deploy a query contract that accesses the Oracle contract
         const contractInstance = await client.getContractInstance(PriceFeedQuery);
         const deploy = await contractInstance.deploy();
         console.log('create query ct_address -> ' + JSON.stringify(deploy.address));
